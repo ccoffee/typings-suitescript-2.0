@@ -206,17 +206,21 @@ export namespace EntryPoints {
 
         interface mapContext {
             readonly isRestarted: boolean;
-            key: string;
-            value: string;
-            write: (key: string, value: string) => void;
+            readonly executionNo: number;
+            readonly errors: MapReduceErrorIteratorContainer;
+            readonly key: string;
+            readonly value: string;
+            readonly write: (key: string, value: string) => void;
         }
         type map = (scriptContext: mapContext) => void;
 
         interface reduceContext {
             readonly isRestarted: boolean;
-            key: string;
-            values: string[];
-            write: (key: string, value: any) => void;
+            readonly executionNo: number;
+            readonly errors: MapReduceErrorIteratorContainer;
+            readonly key: string;
+            readonly values: string[];
+            readonly write: (key: string, value: string) => void;
         }
         type reduce = (scriptContext: reduceContext) => void;
 
@@ -225,6 +229,12 @@ export namespace EntryPoints {
         }
         interface MapReduceIteratorContainer {
             iterator(): MapReduceIterator;
+        }
+        interface MapReduceErrorIterator {
+            each(callback: (key: string, error: string, executionNo: number) => boolean): void;
+        }
+        interface MapReduceErrorIteratorContainer {
+            iterator(): MapReduceErrorIterator;
         }
         interface InputSummary {
             dateCreated: Date;
@@ -239,7 +249,7 @@ export namespace EntryPoints {
             concurrency: number;
             yields: number;
             keys: MapReduceIteratorContainer;
-            errors: MapReduceIteratorContainer;
+            errors: MapReduceErrorIteratorContainer;
         }
         interface ReduceSummary {
             dateCreated: Date;
@@ -248,7 +258,7 @@ export namespace EntryPoints {
             concurrency: number;
             yields: number;
             keys: MapReduceIteratorContainer;
-            errors: MapReduceIteratorContainer;
+            errors: MapReduceErrorIteratorContainer;
         }
         interface summarizeContext {
             readonly isRestarted: boolean;
@@ -269,7 +279,8 @@ export namespace EntryPoints {
         interface renderContext {
             portlet: N_portlet.Portlet;
             column: number;
-            entityid: string;
+            /** This is entityid in the docs, but entity in practice */
+            entity: string;
         }
         type render = (scriptContext: renderContext) => void;
     }

@@ -21,7 +21,7 @@ interface GetHeaderOptions {
 
 interface SendRedirectOptions {
     /**
-     * The base type for this resource. 
+     * The base type for this resource.
      * Use one of the following values: RECORD | TASKLINK | SUITELET
      */
     type: RedirectType;
@@ -69,7 +69,7 @@ interface SetCDNCacheableOptions {
     /**
      * The value of the caching duration. Set using the http.CacheDuration enum.
      */
-    type: string;
+    type: CacheDuration;
 }
 
 interface WriteOptions {
@@ -111,7 +111,7 @@ interface GetLineCountOptions {
     group: string;
 }
 
-interface GetOptions {
+export interface GetOptions {
     /**
      * The HTTP URL being requested.
      */
@@ -122,18 +122,18 @@ interface GetOptions {
     headers?: any;
 }
 
-interface DeleteOptions {
+export interface DeleteOptions extends GetOptions {}
+
+export interface PostOptions extends GetOptions {
     /**
-     * The HTTP URL being requested.
+     * The POST data.
      */
-    url: string;
-    /**
-     * -optional- The HTTP headers.
-     */
-    headers?: any;
+    body: string | any;
 }
 
-interface RequestOptions {
+export interface PutOptions extends PostOptions {}
+
+export interface RequestOptions  extends GetOptions {
     /**
      * The HTTP request method. Set using the http.Method enum.
      * Allow usage as string here as N/http is a heavy import just
@@ -141,47 +141,9 @@ interface RequestOptions {
      */
     method: Method | string;
     /**
-     * The HTTP URL being requested.
-     */
-    url: string;
-    /**
      * -optional- The POST data if the method is POST. If method is DELETE, body data is ignored.
      */
     body?: string | any;
-    /**
-     * -optional- An object containing request headers.
-     */
-    headers?: any;
-}
-
-interface PostOptions {
-    /**
-     * The HTTP URL being requested.
-     */
-    url: string;
-    /**
-     * The POST data.
-     */
-    body: string | any;
-    /**
-     * -optional- The HTTP headers.
-     */
-    headers?: any;
-}
-
-interface PutOptions {
-    /**
-     * The HTTP URL being requested.
-     */
-    url: string;
-    /**
-     * The PUT data.
-     */
-    body: string | any;
-    /**
-     * The HTTP headers.
-     */
-    headers?: any;
 }
 
 interface HttpDeleteFunction {
@@ -253,6 +215,10 @@ export interface ServerRequest {
      */
     body: string;
     /**
+     * The remote IP address that made this request.
+     */
+    clientIpAddress: string;
+    /**
      * The server request files.
      */
     files: any;
@@ -286,7 +252,7 @@ export interface ServerResponse {
      */
     addHeader(options: AddHeaderOptions): void;
     /**
-     * Method used to return the value or values of a response header. 
+     * Method used to return the value or values of a response header.
      * If multiple values are assigned to the header name, the values are returned as an Array.
      */
     getHeader(options: GetHeaderOptions): string | string[];
@@ -367,7 +333,7 @@ export var post: HttpPostFunction;
 export var put: HttpPutFunction;
 
 /**
- * Holds the string values for supported cache durations. 
+ * Holds the string values for supported cache durations.
  * This enum is used to set the value of the ServerResponse.setCdnCacheable(options) property.
  */
 export enum CacheDuration {
@@ -378,7 +344,7 @@ export enum CacheDuration {
 }
 
 /**
- * Holds the string values for supported HTTP requests. 
+ * Holds the string values for supported HTTP requests.
  * This enum is used to set the value of http.request(options) and ServerRequest.method.
  */
 export enum Method {
