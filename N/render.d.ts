@@ -3,6 +3,7 @@ import {Record} from './record';
 import {ServerResponse} from './http';
 import {Result} from './search';
 import {NSXMLDocument} from './xml';
+import query = require('./query');
 
 interface AddCustomDataSourceOptions {
     /** Data source alias. */
@@ -45,14 +46,14 @@ interface MergeEmailOptions {
     /** Internal ID of the template. */
     templateId: number;    // One of the below fields must be included.
     /** Entity record reference. For example, an employee. */
-    entity?: RecordRef; 
+    entity?: RecordRef;
     /** Recipient record reference.  For example, a lead. */
-    recipient?: RecordRef; 
+    recipient?: RecordRef;
     /** Custom record reference. */
-    customRecord?: RecordRef; 
+    customRecord?: RecordRef;
     /** Support Case ID. */
     supportCaseId?: number;
-    /** Transaction ID. */ 
+    /** Transaction ID. */
     transactionId?: number;
 }
 
@@ -98,7 +99,7 @@ interface StatementOptions {
     /** Internal ID of the form to use to print the statement. */
     formId?: number;
     /** Date of the oldest transaction to appear on the statement. */
-    startDate?: Date;
+    startDate?: string;
     /** Statement date. NS Docs say this should be a Date object, but in practice it should be a string.*/
     statementDate?: string;
     /** Include only open transactions. */
@@ -113,6 +114,12 @@ interface XMLToPDFOptions {
 interface TemplateRenderer {
     /** Adds XML or JSON as custom data source to an advanced PDF/HTML template. */
     addCustomDataSource(options: AddCustomDataSourceOptions): void;
+    /**
+     * Uses Query as the renderer’s data source.
+     * You can specify the SuiteAnalytics workbook query either in the query.Query object, or provide a workbook ID to use the query from an existing SuiteAnalytics workbook.
+     * One of options.query or options.id is required in the script.
+     */
+    addQuery(options: AddQueryOptions): void;
     /** Binds a record to a template variable. */
     addRecord(options: AddRecordOptions): void;
     /** Binds a search result to a template variable. */
@@ -133,6 +140,15 @@ interface TemplateRenderer {
     templateContent: string;
 }
 
+interface AddQueryOptions {
+    /** Template name. */
+    templateName: string;
+    /** Workbook query definition. Required if options.id is not specified. */
+    query?: query.Query;
+    /** Workbook query ID. Required if options.query is not specified. */
+    id?: string;
+}
+
 interface TransactionOptions {
     /** The internal ID of the transaction to print. */
     entityId: number;
@@ -140,6 +156,8 @@ interface TransactionOptions {
     printMode?: PrintMode|string;
     /** The transaction form number. */
     formId?: number;
+    /** Applies when advanced templates are used. Print the document in the customer's locale. If basic printing is used, this parameter is ignored and the transaction form is printed in the customer's locale. */
+    inCustLocale?: boolean;
 }
 
 /** Use this method to create a PDF or HTML object of a bill of material. */
